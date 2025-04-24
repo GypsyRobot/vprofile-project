@@ -1,8 +1,9 @@
 pipeline {
     agent any
     tools {
-        maven "MAVEN3.9"
+         maven "MAVEN3.9"
         jdk "JDK17"
+
     }
     
     environment {
@@ -26,29 +27,28 @@ pipeline {
             }
             post {
                 success {
-                    echo 'Now Archiving.'
+                    echo "Now Archiving."
                     archiveArtifacts artifacts: '**/*.war'
                 }
-                failure {
-                    echo 'Build failed'
-                }
-                
             }
         }
 
-        stage('Test') {
-            steps{
+        stage('Test'){
+            steps {
                 sh 'mvn -s settings.xml test'
             }
+
         }
-        stage('Checkstyle Analysis') {
+
+        stage('Checkstyle Analysis'){
             steps {
                 sh 'mvn -s settings.xml checkstyle:checkstyle'
             }
         }
+
         stage('Sonar Analysis') {
             environment {
-               scannerHome = "${SONARSCANNER}" 
+                scannerHome = tool "${SONARSCANNER}"
             }
             steps {
                withSonarQubeEnv("${SONARSERVER}") {
